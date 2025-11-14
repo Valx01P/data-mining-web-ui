@@ -1,20 +1,24 @@
 'use client'
-
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { Product, ProductResponse } from '../types'
 
+// tracks and stores all the products in state
 interface ProductStore {
   products: Product[]
   loaded: boolean
+  hydrated: boolean
   fetchProducts: () => Promise<void>
+  getProductById: (id: number) => Product | undefined
+  getProductsByCategory: (category: string) => Product[]
 }
 
 export const useProductStore = create<ProductStore>()(
   persist(
     (set, get) => ({
-      products: [], // initial state
+      products: [],
       loaded: false,
+      hydrated: false,
 
       fetchProducts: async () => {
         if (get().loaded) return
@@ -25,20 +29,29 @@ export const useProductStore = create<ProductStore>()(
 
           set({
             products: json.products,
-            loaded: true
+            loaded: true,
           })
         } catch (err) {
-          console.error("Failed to fetch products", err)
+          console.error('Failed to fetch products', err)
         }
-      }
+      },
+
+      getProductById: (id) =>
+        get().products.find(p => p.id === id),
+
+      getProductsByCategory: (category) =>
+        get().products.filter(p => p.category === category)
     }),
     {
-      name: 'product-store', // key for local storage
+      name: 'product-store',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({
+      partialize: state => ({
         products: state.products,
         loaded: state.loaded
-      })
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state) state.hydrated = true
+      }
     }
   )
 )

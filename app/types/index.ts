@@ -1,4 +1,3 @@
-
 export interface Product {
   id: number
   name: string
@@ -15,4 +14,18 @@ export interface Product {
 
 export interface ProductResponse {
   products: Product[]
+}
+
+export interface CartItem {
+  productId: number
+  name: string
+  price: number
+  image: string
+}
+
+export interface Transaction {
+  id: number
+  items: string[]
+  createdAt: string
+  source: "sample" | "user"
 }

@@ -1,17 +1,13 @@
 'use client'
-import { useEffect, useState } from "react"
-import { useProductStore } from "./store/useProductStore"
-import { Product } from "./types"
-import ProductRow from "./components/ProductRow"
+import { useProducts } from '@/app/store'
+import { useMemo } from 'react'
+import ProductRow from './components/ProductRow'
 
 export default function Home() {
-  const [categoryGroupedRows, setCategoryGroupedRows] = useState<Record<string, Product[]>>({})
-  const products = useProductStore(state => state.products)
-  const fetchProducts = useProductStore(state => state.fetchProducts)
+  const products = useProducts()  // ← auto-hydrates + auto-fetches
 
-  useEffect(() => {
-    fetchProducts()
-    const rows: Record<string, Product[]> = {} // categoryGroupedRows
+  const categoryGroupedRows = useMemo(() => {
+    const rows: Record<string, typeof products> = {}
 
     for (const product of products) {
       if (!rows[product.category]) {
@@ -20,11 +16,11 @@ export default function Home() {
       rows[product.category].push(product)
     }
 
-    setCategoryGroupedRows(rows)
-  }, [fetchProducts, products])
+    return rows
+  }, [products])
 
   return (
-    <div className="flex flex-col gap-4">
+    <main className="flex flex-col gap-4">
       <div className="flex items-start h-[200px]">
         <h1>Find the latest deals!</h1>
       </div>
@@ -38,6 +34,6 @@ export default function Home() {
           />
         ))}
       </div>
-    </div>
+    </main>
   )
 }
