@@ -1,63 +1,109 @@
 import { Transaction } from '@/app/types'
 
-// normalizes a row
-export function parseTransactionLine(line: string): Transaction | null {
+// valid item list from products.csv
+// everything is lowercase and trimmed for comparison
+const VALID_ITEMS = new Set([
+  'milk','bread','butter','eggs','cheese','yogurt','apple','banana','orange','grape',
+  'tomato','potato','onion','garlic','pepper','chicken','beef','pork','rice','pasta',
+  'noodles','coffee','tea','juice','soda','water','jam','honey','sauce','vegetables'
+])
+
+// parses one csv row into a transaction object
+// returns null if invalid or empty
+export function parseRawTransaction(line: string) {
   // number, values to be comma separated
   const match = line.match(/^(\d+),"(.*)"$/)
   if (!match) return null
 
   const id = Number(match[1])
-  const rawItems = match[2]
+  const raw = match[2]
 
-  // clean and normalize
-  const items = rawItems
-    .split(",")
-    .map(i => i.trim().toLowerCase())
+  // split the items, normalize them, lowercase, trim
+  let items = raw
+    .split(',')
+    .map(x => x.trim().toLowerCase())
     .filter(Boolean)
 
-  if (items.length === 0) return null
+  // track duplicates before removing them
+  const duplicateCount = items.length - new Set(items).size
 
-  // remove any duplicates with a set
-  const unique = Array.from(new Set(items))
+  // remove duplicates
+  items = Array.from(new Set(items))
+
+  // filter out invalid items
+  const invalidItems = items.filter(i => !VALID_ITEMS.has(i))
+  items = items.filter(i => VALID_ITEMS.has(i))
+
+  // if everything was invalid or empty, drop the transaction
+  if (items.length === 0) {
+    return {
+      id,
+      items: [],
+      empty: true,
+      single: false,
+      duplicates: duplicateCount,
+      invalid: invalidItems.length,
+    }
+  }
+
+  // detect single-item transactions
+  const single = items.length === 1
 
   return {
     id,
-    items: unique,
-    createdAt: new Date().toISOString(),
-    source: "sample",
+    items,
+    empty: false,
+    single,
+    duplicates: duplicateCount,
+    invalid: invalidItems.length,
   }
 }
 
-// parse the entire csv into transactions
-export function parseCSVTransactions(csvText: string): Transaction[] {
-  const lines = csvText.trim().split("\n")
+// parses the entire csv content into raw stats + cleaned transactions
+export function cleanSampleTransactions(csvText: string, existingMaxId: number) {
+  const lines = csvText.trim().split('\n')
+  const data = lines.slice(1)
 
-  // remove the header row
-  const dataLines = lines.slice(1)
+  const cleaned: Transaction[] = []
 
-  const parsed: Transaction[] = dataLines
-    .map(line => parseTransactionLine(line.trim()))
-    .filter((t): t is Transaction => t !== null)
+  let total = data.length
+  let emptyCount = 0
+  let singleCount = 0
+  let duplicateCount = 0
+  let invalidCount = 0
 
-  return parsed
-}
+  for (let line of data) {
+    const result = parseRawTransaction(line.trim())
+    if (!result) continue
 
-// id offset for avoiding id collisions with existing itemsets
-export function offsetTransactionIds(
-  transactions: Transaction[],
-  offset: number
-): Transaction[] {
-  return transactions.map((t) => ({
-    ...t,
-    id: t.id + offset
-  }))
-}
+    emptyCount += result.empty ? 1 : 0
+    singleCount += result.single ? 1 : 0
+    duplicateCount += result.duplicates
+    invalidCount += result.invalid
 
-// cleans, normalizes, and correctly offsets the csv for existing itemsets
-export function cleanSampleTransactions(
-  csvText: string,
-  existingMaxId: number
-): Transaction[] {
-  const parsed = parseCSVTransactions(csvText)
-  return offsetTransactionIds(parsed, existingMaxId)
+    // skip empty transactions
+    if (result.empty) continue
+
+    // skip single-item transactions
+    if (result.single) continue
+
+    // ready to keep
+    cleaned.push({
+      id: result.id + existingMaxId,
+      items: result.items,
+      createdAt: new Date().toISOString(),
+      source: 'sample'
+    })
+  }
+
+  return {
+    cleaned,
+    report: {
+      totalTransactions: total,
+      emptyTransactions: emptyCount,
+      singleItemTransactions: singleCount,
+      duplicateItemTransactions: duplicateCount,
+      invalidItemTransactions: invalidCount,
+    }
+  }
 }

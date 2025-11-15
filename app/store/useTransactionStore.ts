@@ -1,13 +1,19 @@
 'use client'
 import { create } from 'zustand'
-import { cleanSampleTransactions } from '../lib/preprocessing/cleaner'
 import { persist, createJSONStorage } from 'zustand/middleware'
+import { cleanSampleTransactions } from '../lib/preprocessing/cleaner'
 import type { CartItem, Transaction } from '../types'
 
-// manages and stores all the transaction related state
 interface TransactionStore {
   transactions: Transaction[]
   loadedSample: boolean
+
+  // preprocessing stats
+  totalTransactions: number
+  emptyTransactions: number
+  singleItemTransactions: number
+  duplicateItemTransactions: number
+  invalidItemTransactions: number
 
   addTransactionFromCart: (items: CartItem[]) => void
   loadSampleTransactions: () => Promise<void>
@@ -20,61 +26,86 @@ export const useTransactionStore = create<TransactionStore>()(
       transactions: [],
       loadedSample: false,
 
+      totalTransactions: 0,
+      emptyTransactions: 0,
+      singleItemTransactions: 0,
+      duplicateItemTransactions: 0,
+      invalidItemTransactions: 0,
+
+      // adds user-created transaction to the state
       addTransactionFromCart: (items) => {
         if (items.length === 0) return
 
-        const itemNames = items.map(i => i.name.toLowerCase().trim())
-        const unique = Array.from(new Set(itemNames))
+        const names = items.map(x => x.name.toLowerCase().trim())
+        const unique = Array.from(new Set(names))
 
         const current = get().transactions
-        const nextId = current.length > 0
-          ? Math.max(...current.map(t => t.id)) + 1
-          : 1
+        const nextId =
+          current.length > 0
+            ? Math.max(...current.map(t => t.id)) + 1
+            : 1
 
         const tx: Transaction = {
           id: nextId,
           items: unique,
           createdAt: new Date().toISOString(),
-          source: "user"
+          source: 'user'
         }
 
         set({ transactions: [...current, tx] })
       },
 
+      // loads the sample csv and applies full preprocessing
       loadSampleTransactions: async () => {
-        const current = get().transactions
-        const maxId = current.length > 0
-          ? Math.max(...current.map(t => t.id))
-          : 0
-
         if (get().loadedSample) return
 
         try {
-          const res = await fetch("/data/sample_transactions.csv")
+          const res = await fetch('/data/sample_transactions.csv')
           const csv = await res.text()
 
-          const sample = cleanSampleTransactions(csv, maxId)
+          const current = get().transactions
+          const maxId =
+            current.length > 0 ? Math.max(...current.map(t => t.id)) : 0
+
+          const { cleaned, report } = cleanSampleTransactions(csv, maxId)
 
           set({
-            transactions: [...current, ...sample],
+            transactions: [...current, ...cleaned],
             loadedSample: true,
+
+            totalTransactions: report.totalTransactions,
+            emptyTransactions: report.emptyTransactions,
+            singleItemTransactions: report.singleItemTransactions,
+            duplicateItemTransactions: report.duplicateItemTransactions,
+            invalidItemTransactions: report.invalidItemTransactions,
           })
         } catch (err) {
-          console.error("Failed to load sample transactions", err)
+          console.error('failed to load sample csv', err)
         }
       },
 
-      clearAll: () => set({
-        transactions: [],
-        loadedSample: false
-      })
+      clearAll: () =>
+        set({
+          transactions: [],
+          loadedSample: false,
+          totalTransactions: 0,
+          emptyTransactions: 0,
+          singleItemTransactions: 0,
+          duplicateItemTransactions: 0,
+          invalidItemTransactions: 0,
+        })
     }),
     {
-      name: "transactions-store",
+      name: 'transactions-store',
       storage: createJSONStorage(() => localStorage),
-      partialize: state => ({
-        transactions: state.transactions,
-        loadedSample: state.loadedSample
+      partialize: (s) => ({
+        transactions: s.transactions,
+        loadedSample: s.loadedSample,
+        totalTransactions: s.totalTransactions,
+        emptyTransactions: s.emptyTransactions,
+        singleItemTransactions: s.singleItemTransactions,
+        duplicateItemTransactions: s.duplicateItemTransactions,
+        invalidItemTransactions: s.invalidItemTransactions,
       })
     }
   )
