@@ -2,18 +2,22 @@
 import Image from 'next/image'
 import { useShoppingCartStore } from '../store/useShoppingCartStore'
 import { useTransactionStore } from '../store/useTransactionStore'
+import { useRouter } from 'next/navigation'
 
 export default function CartSidebar() {
-  const { items, isOpen, closeCart, clearCart } = useShoppingCartStore()
+  const { items, isOpen, closeCart, clearCart, increaseQuantity, decreaseQuantity, removeFromCart } = useShoppingCartStore()
   const addTransaction = useTransactionStore(s => s.addTransactionFromCart)
 
-  const total = items.reduce((s, i) => s + i.price, 0)
+  const total = items.reduce((s, i) => s + (i.price * (i.quantity || 1)), 0)
+
+  const router = useRouter()
 
   const pay = () => {
     if (items.length === 0) return
     addTransaction(items)
     clearCart()
     closeCart()
+    router.push('/transactions')
   }
 
   return (
@@ -33,14 +37,21 @@ export default function CartSidebar() {
         )}
 
         {items.map(item => (
-          <div key={item.productId} className="bg-zinc-900 p-2 rounded flex gap-3">
-            <div className="relative w-10 h-10 bg-white">
+          <div key={item.productId} className="bg-white/5 p-3 rounded-lg flex gap-3 items-center">
+            <div className="relative w-12 h-12 bg-white/10 rounded-md overflow-hidden">
               <Image src={item.image} alt={item.name} fill className="object-contain p-1" />
             </div>
 
-            <div className="text-xs flex-1">
-              <div>{item.name}</div>
-              <div className="opacity-70">${item.price.toFixed(2)}</div>
+            <div className="text-sm flex-1">
+              <div className="font-medium text-white">{item.name}</div>
+              <div className="text-white/70 text-xs">${item.price.toFixed(2)}</div>
+
+              <div className="mt-2 flex items-center gap-2">
+                <button onClick={() => decreaseQuantity(item.productId)} className="px-2 py-1 bg-white/6 rounded">-</button>
+                <div className="px-3 py-1 bg-white/5 rounded text-sm">{item.quantity || 1}</div>
+                <button onClick={() => increaseQuantity(item.productId)} className="px-2 py-1 bg-white/6 rounded">+</button>
+                <button onClick={() => removeFromCart(item.productId)} className="ml-3 text-xs text-red-400">Remove</button>
+              </div>
             </div>
           </div>
         ))}

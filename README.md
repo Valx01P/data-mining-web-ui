@@ -1,175 +1,124 @@
-### Interactive Supermarket Simulation with Association Rule Mining
+Interactive Supermarket Simulation with Association Rule Mining
 
-#### Author Information
+Authors Information
 
-- **Name**: [Your Full Name]
-- **Student ID**: [Your ID]
-- **Course**: CAI 4002 - Artificial Intelligence
-- **Semester**: [Fall/Spring Year]
+Name: 
+Mandy Saint Simon
 
 
+Student ID: 
 
-#### System Overview
+Course: CAI 4002 - Artificial Intelligence
+Semester: [Fall/Spring Year]
 
-[2-3 sentences describing what your application does]
-
-
-
-#### Technical Stack
-
-- **Language**: [Python 3.x / JavaScript / Java]
-- **Key Libraries**: [List main dependencies]
-- **UI Framework**: [If applicable]
+## System Overview:
+Application demonstrating association rule mining (Apriori, Eclat, FP-Growth) with UI for browsing products, creating transactions, preprocessing data, running mining algorithms and querying results.
 
 
 
-#### Installation
+## Features
 
-##### Prerequisites
-- [e.g., Python 3.8+, Node.js 14+, Java 11+]
-- [Other requirements]
+- Product catalog and category carousels with glassmorphism UI
+- Slider switch navigation between `Products` and `Transactions`
+- Add-to-cart and cart sidebar with quantity controls and checkout → transactions
+- Preprocessing report showing cleaning statistics and summary
+- Query Analysis panel for  inspecting mined rules and confidence/support
+-Implementations of Apriori, Eclat, and FP-Growth
 
-##### Setup
+---
+
+## Technical Stack
+
+- Next.js (App Router) + TypeScript
+- Tailwind CSS for styling
+- Zustand for client-side state management
+- Lucide icons
+
+---
+
+## Getting Started (macOS / zsh)
+
+Prerequisites:
+
+- Node.js 18+ (LTS recommended)
+- npm or pnpm
+
+Install and run locally:
+
 ```bash
-# Clone or extract project
-cd [project-directory]
+# clone repository (if not already)
+git clone https://github.com/Ztos0/data-mining-web-ui.git
+cd data-mining-web-ui
 
-# Install dependencies
-[command to install dependencies]
+# install dependencies
+npm install
 
-# Run application
-[command to start application]
+# run dev server
+npm run dev
 ```
 
+Open `http://localhost:3000` in your browser.
+
+or 
+
+https://data-mining-web-ui.vercel.app/
 
 
-#### Usage
+## Usage Guide
 
-##### 1. Load Data
-- **Manual Entry**: Click items to create transactions
-- **Import CSV**: Use "Import" button to load `sample_transactions.csv`
+1. Products
 
-##### 2. Preprocess Data
-- Click "Run Preprocessing"
-- Review cleaning report (empty transactions, duplicates, etc.)
+	- Browse categories in the carousels and click `Add` on product cards to add items to the cart.
+	- Open the cart (top-right) to change quantities or `Pay` to record a transaction and navigate to the Transactions page.
 
-##### 3. Run Mining
-- Set minimum support and confidence thresholds
-- Click "Analyze" to execute all three algorithms
-- Wait for completion (~1-3 seconds)
+2. Transactions & Preprocessing
 
-##### 4. Query Results
-- Select product from dropdown
-- View associated items and recommendation strength
-- Optional: View technical details (raw rules, performance metrics)
+	- Upload or load sample transactions from `public/data/sample_transactions.csv`.
+	- The Preprocessing Report summarizes cleaning steps (duplicates removed, empty rows, normalizations).
 
+3. Mining
 
+	- On the Transactions page use the `Query Analysis` panel:
+	  - Choose the algorithm (Apriori, Eclat, FP-Growth).
+	  - Adjust minimum support and confidence sliders.
+	  - Click `Run Mining` to execute on the loaded transactions.
+	  - View execution time and generated rules; use the query field to inspect rules for a specific item.
 
-#### Algorithm Implementation
+---
 
-##### Apriori
-[2-3 sentences on your implementation approach]
-- Data structure: [e.g., dictionary of itemsets]
-- Candidate generation: [breadth-first, level-wise]
-- Pruning strategy: [minimum support]
+## Algorithms — brief notes
 
-##### Eclat
-[2-3 sentences on your implementation approach]
-- Data structure: [e.g., TID-set representation]
-- Search strategy: [depth-first]
-- Intersection method: [set operations]
+- Apriori: Level-wise candidate generation using frequent itemset pruning by support. Good for small-to-medium datasets; CPU and memory grow quickly with itemset size.
+- Eclat: Uses vertical (TID-set) representation and depth-first traversal; more memory-efficient for some datasets and often faster than Apriori for dense datasets.
+- FP-Growth: Builds an FP-tree and mines frequent patterns without candidate generation; generally faster than Apriori on larger datasets.
 
-##### CLOSET
-[2-3 sentences on your implementation approach]
-- Data structure: [e.g., FP-tree / prefix tree]
-- Mining approach: [closed itemsets only]
-- Closure checking: [method used]
+The implementations are in `lib/algorithms/*.ts`.
+---
 
+## Testing & Validation
 
+- Manual tests: CSV import, preprocessing report, mining runs, query analysis, add-to-cart flows.
+- Automated: None included by default — you can add unit tests against `lib/algorithms` functions (Jest/Vitest recommended).
 
-#### Performance Results
+---
 
-Tested on provided dataset (80-100 transactions after cleaning):
+## Known Limitations
 
-| Algorithm | Runtime (ms) | Rules Generated | Memory Usage |
-|-----------|--------------|-----------------|--------------|
-| Apriori   | [value]      | [value]         | [value]      |
-| Eclat     | [value]      | [value]         | [value]      |
-| CLOSET    | [value]      | [value]         | [value]      |
+- Mining implementations run client-side and are not optimized for large-scale datasets.
+- UI/UX improvements can be made (toasts on add-to-cart, visual confirmation on mining completion).
 
-**Parameters**: min_support = 0.2, min_confidence = 0.5
-
-**Analysis**: [1-2 sentences explaining performance differences]
+---
 
 
 
-#### Project Structure
+## AI Tool Usage
 
-```
-project-root/
-├── src/
-│   ├── algorithms/
-│   │   ├── apriori.[py/js/java]
-│   │   ├── eclat.[py/js/java]
-│   │   └── closet.[py/js/java]
-│   ├── preprocessing/
-│   │   └── cleaner.[py/js/java]
-│   ├── ui/
-│   │   └── [interface files]
-│   └── main.[py/js/java]
-├── data/
-│   ├── sample_transactions.csv
-│   └── products.csv
-├── README.md
-├── REPORT.pdf
-└── [requirements.txt / package.json / pom.xml]
-```
+This repository used AI-assisted tools during development for scaffolding and debugging. Specifically:
 
+- Chat-based assistance was used to help refactor UI components and fix parsing errors.
+- Code-completion assistance (e.g., Copilot) was used to accelerate boilerplate creation.
 
+All AI-generated code was verified and adapted to the project's needs.
 
-#### Data Preprocessing
+---
 
-Issues handled:
-- Empty transactions: [count] removed
-- Single-item transactions: [count] removed
-- Duplicate items: [count] instances cleaned
-- Case inconsistencies: [count] standardized
-- Invalid items: [count] removed
-- Extra whitespace: trimmed from all items
-
-
-
-#### Testing
-
-Verified functionality:
-- [✓] CSV import and parsing
-- [✓] All preprocessing operations
-- [✓] Three algorithm implementations
-- [✓] Interactive query system
-- [✓] Performance measurement
-
-Test cases:
-- [Describe 2-3 key test scenarios]
-
-
-
-#### Known Limitations
-
-[List any known issues or constraints, if applicable]
-
-
-
-#### AI Tool Usage
-
-[Required: 1 paragraph describing which AI tools you used and for what purpose]
-
-Example:
-"Used ChatGPT for explaining Eclat algorithm vertical representation and debugging file parsing errors. Used GitHub Copilot for generating UI boilerplate code. All generated code was reviewed, tested, and adapted for this specific implementation."
-
-
-
-#### References
-
-- Course lecture materials
-- [Algorithm papers or resources consulted]
-- [Library documentation links]

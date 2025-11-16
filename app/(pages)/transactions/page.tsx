@@ -71,13 +71,13 @@ export default function Transactions() {
     <main className="p-6 flex flex-col gap-6">
       {/* header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl">transactions</h1>
+        <h1 className="text-4xl font-bold text-white">Transactions</h1>
 
         <div className="flex gap-2 items-center">
           {/* toggle builder */}
           <button
             onClick={() => setBuilderOpen(!builderOpen)}
-            className="bg-zinc-800 px-3 py-2 rounded text-sm flex items-center gap-1"
+            className="backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 px-3 py-2 rounded-lg text-sm flex items-center gap-1 text-white font-medium transition-all duration-300 shadow-lg"
           >
             {builderOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             quick builder
@@ -86,7 +86,7 @@ export default function Transactions() {
           {/* sort */}
           <button
             onClick={() => setSortAsc(!sortAsc)}
-            className="bg-zinc-800 p-2 rounded"
+            className="backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 p-2 rounded-lg text-white transition-all duration-300 shadow-lg"
           >
             {sortAsc ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
           </button>
@@ -94,7 +94,7 @@ export default function Transactions() {
           {/* clear */}
           <button
             onClick={clearAll}
-            className="bg-zinc-800 px-3 py-2 rounded text-sm"
+            className="backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 px-3 py-2 rounded-lg text-sm text-white font-medium transition-all duration-300 shadow-lg"
           >
             clear all
           </button>
@@ -102,7 +102,7 @@ export default function Transactions() {
           {/* load sample */}
           <button
             onClick={loadSample}
-            className="bg-zinc-800 px-3 py-2 rounded text-sm"
+            className="backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 px-3 py-2 rounded-lg text-sm text-white font-medium transition-all duration-300 shadow-lg"
           >
             {loadedSample ? 'sample loaded' : 'load sample csv'}
           </button>
@@ -111,13 +111,13 @@ export default function Transactions() {
 
       {/* quick builder panel */}
       {builderOpen && (
-        <div className="bg-[#1b1b1b] p-4 rounded flex flex-col gap-4">
+        <div className="backdrop-blur-md bg-white/10 border border-white/20 p-6 rounded-xl flex flex-col gap-4 shadow-lg">
           <div className="flex flex-row overflow-x-auto gap-2 pb-2">
             {products.map((p) => (
               <button
                 key={p.id}
                 onClick={() => addToBuilder(p)}
-                className="bg-zinc-800 px-3 py-2 rounded text-sm shrink-0"
+                className="backdrop-blur-md bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-2 rounded-lg text-sm shrink-0 text-white font-medium transition-all duration-300"
               >
                 {p.name}
               </button>
@@ -126,15 +126,15 @@ export default function Transactions() {
 
           <div className="flex flex-col gap-2">
             {builderItems.length === 0 ? (
-              <p className="text-sm opacity-70">no items selected</p>
+              <p className="text-sm text-white/50">no items selected</p>
             ) : (
               builderItems.map((item) => (
                 <div
                   key={item.productId}
-                  className="bg-zinc-900 p-2 rounded text-sm flex justify-between items-center"
+                  className="bg-white/5 hover:bg-white/10 border border-white/10 p-3 rounded-lg text-sm flex justify-between items-center text-white transition-all duration-300"
                 >
                   <span>{item.name}</span>
-                  <button onClick={() => removeFromBuilder(item.productId)}>
+                  <button onClick={() => removeFromBuilder(item.productId)} className="hover:text-red-400 transition-colors">
                     <X size={14} />
                   </button>
                 </div>
@@ -145,13 +145,13 @@ export default function Transactions() {
           <div className="flex gap-2">
             <button
               onClick={createTransactionFromBuilder}
-              className="bg-green-700 px-3 py-2 rounded text-sm"
+              className="bg-gradient-to-r from-green-500 to-green-600 hover:shadow-lg hover:shadow-green-500/50 text-white font-semibold px-3 py-2 rounded-lg text-sm transition-all duration-300"
             >
               create transaction
             </button>
             <button
               onClick={clearBuilder}
-              className="bg-zinc-800 px-3 py-2 rounded text-sm"
+              className="backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 text-white font-medium px-3 py-2 rounded-lg text-sm transition-all duration-300"
             >
               clear
             </button>
@@ -161,12 +161,15 @@ export default function Transactions() {
 
       {/* stats */}
       {loadedSample && (
-        <div className="bg-[#1b1b1b] p-4 rounded text-sm flex flex-col gap-1">
-          <p>total rows: {total}</p>
-          <p>empty removed: {empty}</p>
-          <p>single-item removed: {single}</p>
-          <p>duplicate items removed: {duplicates}</p>
-          <p>invalid items removed: {invalid}</p>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-lg font-bold text-white">Preprocessing Report:</h2>
+          <div className="backdrop-blur-md bg-white/10 border border-white/20 p-6 rounded-xl text-sm flex flex-col gap-2 shadow-lg">
+            <p className="text-white"><span className="font-semibold">Total rows:</span> {total}</p>
+            <p className="text-white/80"><span className="font-semibold">Empty removed:</span> {empty}</p>
+            <p className="text-white/80"><span className="font-semibold">Single-item removed:</span> {single}</p>
+            <p className="text-white/80"><span className="font-semibold">Duplicate items removed:</span> {duplicates}</p>
+            <p className="text-white/80"><span className="font-semibold">Invalid items removed:</span> {invalid}</p>
+          </div>
         </div>
       )}
 
@@ -175,16 +178,16 @@ export default function Transactions() {
 
       {/* transaction list */}
       {txs.length === 0 ? (
-        <p className="opacity-60">no transactions yet</p>
+        <p className="text-white/50">no transactions yet</p>
       ) : (
         <div className="flex flex-col gap-3 max-h-[50vh] overflow-y-auto">
           {sortedTx.map((tx) => (
-            <div key={tx.id} className="bg-[#1b1b1b] p-3 rounded text-sm">
-              <div className="flex justify-between mb-1">
-                <span>transaction #{tx.id}</span>
-                <span className="opacity-60">{tx.source}</span>
+            <div key={tx.id} className="backdrop-blur-md bg-white/10 border border-white/20 p-4 rounded-lg text-sm hover:bg-white/15 transition-all duration-300 shadow-lg">
+              <div className="flex justify-between mb-2">
+                <span className="font-semibold text-white">Transaction #{tx.id}</span>
+                <span className="text-white/60 text-xs">{tx.source}</span>
               </div>
-              <p>{tx.items.join(', ')}</p>
+              <p className="text-white/80">{tx.items.join(', ')}</p>
             </div>
           ))}
         </div>
