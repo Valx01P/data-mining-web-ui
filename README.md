@@ -47,8 +47,6 @@ Install and run locally:
 
 ```bash
 # clone repository (if not already)
-git clone https://github.com/Ztos0/data-mining-web-ui.git
-cd data-mining-web-ui
 
 # install dependencies
 npm install
