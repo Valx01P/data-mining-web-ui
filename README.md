@@ -1,21 +1,29 @@
-#+ Data Mining Web UI
+Interactive Supermarket Simulation with Association Rule Mining
 
-Interactive Next.js application demonstrating association rule mining (Apriori, Eclat, FP-Growth) with a polished UI for browsing products, creating transactions, preprocessing data, running mining algorithms and querying results.
+Authors Information
 
-Author: Mandy Saint Simon
-Repository: Ztos0/data-mining-web-ui
-Branch: Adjustment
+Name: 
+Mandy Saint Simon
 
----
+
+Student ID: 
+
+Course: CAI 4002 - Artificial Intelligence
+Semester: [Fall/Spring Year]
+
+## System Overview:
+Application demonstrating association rule mining (Apriori, Eclat, FP-Growth) with UI for browsing products, creating transactions, preprocessing data, running mining algorithms and querying results.
+
+
 
 ## Features
 
-- Product catalog and category carousels with glassmorphism styling
+- Product catalog and category carousels with glassmorphism UI
 - Slider switch navigation between `Products` and `Transactions`
 - Add-to-cart and cart sidebar with quantity controls and checkout → transactions
 - Preprocessing report showing cleaning statistics and summary
-- Query Analysis panel for interactively inspecting mined rules and confidence/support
-- Built-in implementations of Apriori, Eclat, and FP-Growth (client-side JS)
+- Query Analysis panel for  inspecting mined rules and confidence/support
+-Implementations of Apriori, Eclat, and FP-Growth
 
 ---
 
@@ -51,30 +59,10 @@ npm run dev
 
 Open `http://localhost:3000` in your browser.
 
-Build for production:
+or 
 
-```bash
-npm run build
-npm run start
-```
+https://data-mining-web-ui.vercel.app/
 
----
-
-## Project Structure (relevant files)
-
-- `app/` - Next.js app router pages and components
-  - `app/page.tsx` - Home / hero and product overview
-  - `app/components/Nav.tsx` - Top navigation with slider switch and cart button
-  - `app/components/ProductRow.tsx` - Category carousel (now supports Add to Cart)
-  - `app/components/CartSidebar.tsx` - Shopping cart drawer with quantity controls
-  - `app/components/QueryPanel.tsx` - Query Analysis UI for mined rules
-  - `app/(pages)/transactions/page.tsx` - Transactions and preprocessing report
-- `lib/algorithms/` - `apriori.ts`, `eclat.ts`, `fpgrowth.ts` (mining implementations)
-- `lib/preprocessing/cleaner.ts` - Data cleaning utilities
-- `store/` - Zustand stores (`useShoppingCartStore.ts`, `useAssociationStore.ts`, `useTransactionStore.ts`)
-- `public/data/` - sample CSV and products data (`products.csv`, `sample_transactions.csv`, `products.json`)
-
----
 
 ## Usage Guide
 
@@ -104,8 +92,7 @@ npm run start
 - Eclat: Uses vertical (TID-set) representation and depth-first traversal; more memory-efficient for some datasets and often faster than Apriori for dense datasets.
 - FP-Growth: Builds an FP-tree and mines frequent patterns without candidate generation; generally faster than Apriori on larger datasets.
 
-The implementations are in `lib/algorithms/*.ts` and are intended for client-side demonstration purposes (not optimized for very large datasets).
-
+The implementations are in `lib/algorithms/*.ts`.
 ---
 
 ## Testing & Validation
@@ -122,12 +109,7 @@ The implementations are in `lib/algorithms/*.ts` and are intended for client-sid
 
 ---
 
-## Development notes
 
-- Add new algorithm: implement in `lib/algorithms`, expose in `useAssociationStore`, and add button in `QueryPanel.tsx`.
-- Cart state persists via `zustand`'s `persist` middleware (localStorage).
-
----
 
 ## AI Tool Usage
 
@@ -140,13 +122,3 @@ All AI-generated code was verified and adapted to the project's needs.
 
 ---
 
-## Contributing
-
-1. Fork the repo
-2. Create a branch for your feature: `git checkout -b feature/my-change`
-3. Make changes, run `npm run dev`, and verify behavior
-4. Create a pull request with a clear description
-
----
-
-If you'd like, I can also add a short CONTRIBUTING.md, some example unit tests for the algorithms, or wire up to a CI workflow. Tell me which you'd prefer next.
