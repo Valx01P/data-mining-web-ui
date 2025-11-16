@@ -36,7 +36,7 @@ Application demonstrating association rule mining (Apriori, Eclat, FP-Growth) wi
 
 ---
 
-## Getting Started (macOS / zsh)
+## Getting Started 
 
 Prerequisites:
 
