@@ -9,6 +9,9 @@ interface ShoppingCartState {
   isOpen: boolean
 
   addToCart: (product: Product) => void
+  increaseQuantity: (productId: number) => void
+  decreaseQuantity: (productId: number) => void
+  setQuantity: (productId: number, qty: number) => void
   removeFromCart: (productId: number) => void
   clearCart: () => void
 
@@ -24,22 +27,58 @@ export const useShoppingCartStore = create<ShoppingCartState>()(
       isOpen: false,
 
       addToCart: (product) => {
-        const exists = get().items.some(i => i.productId === product.id)
-        if (exists) return
-
-        const newItem: CartItem = {
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          image: product.main_image_url
+        const items = get().items
+        const idx = items.findIndex(i => i.productId === product.id)
+        if (idx === -1) {
+          const newItem: CartItem = {
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.main_image_url,
+            quantity: 1
+          }
+          set(state => ({ ...state, items: [...state.items, newItem] }))
+        } else {
+          // increment quantity
+          const next = items.map(i =>
+            i.productId === product.id ? { ...i, quantity: (i.quantity || 1) + 1 } : i
+          )
+          set({ items: next })
         }
+      },
 
+      increaseQuantity: (productId) => {
         set(state => ({
           ...state,
-          items: [...state.items, newItem]
+          items: state.items.map(i => i.productId === productId ? { ...i, quantity: (i.quantity || 1) + 1 } : i)
         }))
       },
 
+      decreaseQuantity: (productId) => {
+        const items = get().items
+        const item = items.find(i => i.productId === productId)
+        if (!item) return
+        if ((item.quantity || 1) <= 1) {
+          // remove item
+          set(state => ({ ...state, items: state.items.filter(i => i.productId !== productId) }))
+        } else {
+          set(state => ({
+            ...state,
+            items: state.items.map(i => i.productId === productId ? { ...i, quantity: (i.quantity || 1) - 1 } : i)
+          }))
+        }
+      },
+
+      setQuantity: (productId, qty) => {
+        if (qty <= 0) {
+          set(state => ({ ...state, items: state.items.filter(i => i.productId !== productId) }))
+          return
+        }
+        set(state => ({
+          ...state,
+          items: state.items.map(i => i.productId === productId ? { ...i, quantity: qty } : i)
+        }))
+      },
 
       removeFromCart: (productId) =>
         set(state => ({

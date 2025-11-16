@@ -1,175 +1,152 @@
-### Interactive Supermarket Simulation with Association Rule Mining
+#+ Data Mining Web UI
 
-#### Author Information
+Interactive Next.js application demonstrating association rule mining (Apriori, Eclat, FP-Growth) with a polished UI for browsing products, creating transactions, preprocessing data, running mining algorithms and querying results.
 
-- **Name**: [Your Full Name]
-- **Student ID**: [Your ID]
-- **Course**: CAI 4002 - Artificial Intelligence
-- **Semester**: [Fall/Spring Year]
+Author: Mandy Saint Simon
+Repository: Ztos0/data-mining-web-ui
+Branch: Adjustment
 
+---
 
+## Features
 
-#### System Overview
+- Product catalog and category carousels with glassmorphism styling
+- Slider switch navigation between `Products` and `Transactions`
+- Add-to-cart and cart sidebar with quantity controls and checkout → transactions
+- Preprocessing report showing cleaning statistics and summary
+- Query Analysis panel for interactively inspecting mined rules and confidence/support
+- Built-in implementations of Apriori, Eclat, and FP-Growth (client-side JS)
 
-[2-3 sentences describing what your application does]
+---
 
+## Technical Stack
 
+- Next.js (App Router) + TypeScript
+- Tailwind CSS for styling
+- Zustand for client-side state management
+- Lucide icons
 
-#### Technical Stack
+---
 
-- **Language**: [Python 3.x / JavaScript / Java]
-- **Key Libraries**: [List main dependencies]
-- **UI Framework**: [If applicable]
+## Getting Started (macOS / zsh)
 
+Prerequisites:
 
+- Node.js 18+ (LTS recommended)
+- npm or pnpm
 
-#### Installation
+Install and run locally:
 
-##### Prerequisites
-- [e.g., Python 3.8+, Node.js 14+, Java 11+]
-- [Other requirements]
-
-##### Setup
 ```bash
-# Clone or extract project
-cd [project-directory]
+# clone repository (if not already)
+git clone https://github.com/Ztos0/data-mining-web-ui.git
+cd data-mining-web-ui
 
-# Install dependencies
-[command to install dependencies]
+# install dependencies
+npm install
 
-# Run application
-[command to start application]
+# run dev server
+npm run dev
 ```
 
+Open `http://localhost:3000` in your browser.
 
+Build for production:
 
-#### Usage
-
-##### 1. Load Data
-- **Manual Entry**: Click items to create transactions
-- **Import CSV**: Use "Import" button to load `sample_transactions.csv`
-
-##### 2. Preprocess Data
-- Click "Run Preprocessing"
-- Review cleaning report (empty transactions, duplicates, etc.)
-
-##### 3. Run Mining
-- Set minimum support and confidence thresholds
-- Click "Analyze" to execute all three algorithms
-- Wait for completion (~1-3 seconds)
-
-##### 4. Query Results
-- Select product from dropdown
-- View associated items and recommendation strength
-- Optional: View technical details (raw rules, performance metrics)
-
-
-
-#### Algorithm Implementation
-
-##### Apriori
-[2-3 sentences on your implementation approach]
-- Data structure: [e.g., dictionary of itemsets]
-- Candidate generation: [breadth-first, level-wise]
-- Pruning strategy: [minimum support]
-
-##### Eclat
-[2-3 sentences on your implementation approach]
-- Data structure: [e.g., TID-set representation]
-- Search strategy: [depth-first]
-- Intersection method: [set operations]
-
-##### CLOSET
-[2-3 sentences on your implementation approach]
-- Data structure: [e.g., FP-tree / prefix tree]
-- Mining approach: [closed itemsets only]
-- Closure checking: [method used]
-
-
-
-#### Performance Results
-
-Tested on provided dataset (80-100 transactions after cleaning):
-
-| Algorithm | Runtime (ms) | Rules Generated | Memory Usage |
-|-----------|--------------|-----------------|--------------|
-| Apriori   | [value]      | [value]         | [value]      |
-| Eclat     | [value]      | [value]         | [value]      |
-| CLOSET    | [value]      | [value]         | [value]      |
-
-**Parameters**: min_support = 0.2, min_confidence = 0.5
-
-**Analysis**: [1-2 sentences explaining performance differences]
-
-
-
-#### Project Structure
-
-```
-project-root/
-├── src/
-│   ├── algorithms/
-│   │   ├── apriori.[py/js/java]
-│   │   ├── eclat.[py/js/java]
-│   │   └── closet.[py/js/java]
-│   ├── preprocessing/
-│   │   └── cleaner.[py/js/java]
-│   ├── ui/
-│   │   └── [interface files]
-│   └── main.[py/js/java]
-├── data/
-│   ├── sample_transactions.csv
-│   └── products.csv
-├── README.md
-├── REPORT.pdf
-└── [requirements.txt / package.json / pom.xml]
+```bash
+npm run build
+npm run start
 ```
 
+---
 
+## Project Structure (relevant files)
 
-#### Data Preprocessing
+- `app/` - Next.js app router pages and components
+  - `app/page.tsx` - Home / hero and product overview
+  - `app/components/Nav.tsx` - Top navigation with slider switch and cart button
+  - `app/components/ProductRow.tsx` - Category carousel (now supports Add to Cart)
+  - `app/components/CartSidebar.tsx` - Shopping cart drawer with quantity controls
+  - `app/components/QueryPanel.tsx` - Query Analysis UI for mined rules
+  - `app/(pages)/transactions/page.tsx` - Transactions and preprocessing report
+- `lib/algorithms/` - `apriori.ts`, `eclat.ts`, `fpgrowth.ts` (mining implementations)
+- `lib/preprocessing/cleaner.ts` - Data cleaning utilities
+- `store/` - Zustand stores (`useShoppingCartStore.ts`, `useAssociationStore.ts`, `useTransactionStore.ts`)
+- `public/data/` - sample CSV and products data (`products.csv`, `sample_transactions.csv`, `products.json`)
 
-Issues handled:
-- Empty transactions: [count] removed
-- Single-item transactions: [count] removed
-- Duplicate items: [count] instances cleaned
-- Case inconsistencies: [count] standardized
-- Invalid items: [count] removed
-- Extra whitespace: trimmed from all items
+---
 
+## Usage Guide
 
+1. Products
 
-#### Testing
+	- Browse categories in the carousels and click `Add` on product cards to add items to the cart.
+	- Open the cart (top-right) to change quantities or `Pay` to record a transaction and navigate to the Transactions page.
 
-Verified functionality:
-- [✓] CSV import and parsing
-- [✓] All preprocessing operations
-- [✓] Three algorithm implementations
-- [✓] Interactive query system
-- [✓] Performance measurement
+2. Transactions & Preprocessing
 
-Test cases:
-- [Describe 2-3 key test scenarios]
+	- Upload or load sample transactions from `public/data/sample_transactions.csv`.
+	- The Preprocessing Report summarizes cleaning steps (duplicates removed, empty rows, normalizations).
 
+3. Mining
 
+	- On the Transactions page use the `Query Analysis` panel:
+	  - Choose the algorithm (Apriori, Eclat, FP-Growth).
+	  - Adjust minimum support and confidence sliders.
+	  - Click `Run Mining` to execute on the loaded transactions.
+	  - View execution time and generated rules; use the query field to inspect rules for a specific item.
 
-#### Known Limitations
+---
 
-[List any known issues or constraints, if applicable]
+## Algorithms — brief notes
 
+- Apriori: Level-wise candidate generation using frequent itemset pruning by support. Good for small-to-medium datasets; CPU and memory grow quickly with itemset size.
+- Eclat: Uses vertical (TID-set) representation and depth-first traversal; more memory-efficient for some datasets and often faster than Apriori for dense datasets.
+- FP-Growth: Builds an FP-tree and mines frequent patterns without candidate generation; generally faster than Apriori on larger datasets.
 
+The implementations are in `lib/algorithms/*.ts` and are intended for client-side demonstration purposes (not optimized for very large datasets).
 
-#### AI Tool Usage
+---
 
-[Required: 1 paragraph describing which AI tools you used and for what purpose]
+## Testing & Validation
 
-Example:
-"Used ChatGPT for explaining Eclat algorithm vertical representation and debugging file parsing errors. Used GitHub Copilot for generating UI boilerplate code. All generated code was reviewed, tested, and adapted for this specific implementation."
+- Manual tests: CSV import, preprocessing report, mining runs, query analysis, add-to-cart flows.
+- Automated: None included by default — you can add unit tests against `lib/algorithms` functions (Jest/Vitest recommended).
 
+---
 
+## Known Limitations
 
-#### References
+- Mining implementations run client-side and are not optimized for large-scale datasets.
+- UI/UX improvements can be made (toasts on add-to-cart, visual confirmation on mining completion).
 
-- Course lecture materials
-- [Algorithm papers or resources consulted]
-- [Library documentation links]
+---
+
+## Development notes
+
+- Add new algorithm: implement in `lib/algorithms`, expose in `useAssociationStore`, and add button in `QueryPanel.tsx`.
+- Cart state persists via `zustand`'s `persist` middleware (localStorage).
+
+---
+
+## AI Tool Usage
+
+This repository used AI-assisted tools during development for scaffolding and debugging. Specifically:
+
+- Chat-based assistance was used to help refactor UI components and fix parsing errors.
+- Code-completion assistance (e.g., Copilot) was used to accelerate boilerplate creation.
+
+All AI-generated code was verified and adapted to the project's needs.
+
+---
+
+## Contributing
+
+1. Fork the repo
+2. Create a branch for your feature: `git checkout -b feature/my-change`
+3. Make changes, run `npm run dev`, and verify behavior
+4. Create a pull request with a clear description
+
+---
+
+If you'd like, I can also add a short CONTRIBUTING.md, some example unit tests for the algorithms, or wire up to a CI workflow. Tell me which you'd prefer next.
